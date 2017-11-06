@@ -2,6 +2,7 @@ namespace FriendOrganizer.DataAccess.Migrations
 {
     using FriendOrganizer.Model;
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
@@ -18,7 +19,7 @@ namespace FriendOrganizer.DataAccess.Migrations
             context.Friends.AddOrUpdate(
                 f => f.FirstName,
             new Friend { FirstName = "Ryu", LastName = "Bloodfist" },
-            new Friend { FirstName = "Drisse", LastName = "Silverwind" },
+            new Friend { FirstName = "Derisian", LastName = "Silverwind" },
             new Friend { FirstName = "Raiko", LastName = "Earthshaker" },
             new Friend { FirstName = "Bhissy", LastName = "Stormtotem" }
             );
@@ -35,6 +36,19 @@ namespace FriendOrganizer.DataAccess.Migrations
             context.SaveChanges();
 
             context.FriendPhoneNumbers.AddOrUpdate(pn => pn.Number, new FriendPhoneNumber { Number = "+46 123456789", FriendId = context.Friends.First().Id });
+
+            context.Meetings.AddOrUpdate(m => m.Title,
+                new Meeting
+                {
+                    Title = "Watching UFC",
+                    DateFrom = new DateTime(2018, 5, 26),
+                    DateTo = new DateTime(2018, 5, 26),
+                    Friends = new List<Friend>
+                    {
+                        context.Friends.Single(f => f.FirstName == "Ryu" && f.LastName == "Bloodfist"),
+                        context.Friends.Single(f => f.FirstName == "Raiko" && f.LastName == "Earthshaker")
+                    }
+                });
         }
     }
 }
