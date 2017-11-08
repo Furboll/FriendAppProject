@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Data.Entity.Infrastructure;
 
 namespace FriendOrganizer.UI.ViewModel
 {
@@ -159,10 +160,13 @@ namespace FriendOrganizer.UI.ViewModel
 
         protected override async void OnSaveExecute()
         {
-            await _friendRepository.SaveAsync();
-            HasChanges = _friendRepository.HasChanges();
-            Id = Friend.Id;
-            RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+            await SaveWithOptimisticConcurrencyAsync(_friendRepository.SaveAsync, 
+                () => 
+                {
+                    HasChanges = _friendRepository.HasChanges();
+                    Id = Friend.Id;
+                    RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
+                });
         }
 
         protected override bool OnSaveCanExecute()
